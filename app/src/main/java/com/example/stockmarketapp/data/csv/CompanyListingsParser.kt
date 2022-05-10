@@ -1,6 +1,6 @@
 package com.example.stockmarketapp.data.csv
 
-import com.example.stockmarketapp.domain.model.CompanyListings
+import com.example.stockmarketapp.domain.model.CompanyListing
 import com.opencsv.CSVReader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -10,10 +10,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class CompanyListingsParser @Inject constructor(): CSVParser<CompanyListings> {
-    override suspend fun parse(stream: InputStream): List<CompanyListings> {
+class CompanyListingsParser @Inject constructor() : CSVParser<CompanyListing> {
+    override suspend fun parse(stream: InputStream): List<CompanyListing> {
         val csvReader = CSVReader(InputStreamReader(stream))
-        return withContext(Dispatchers.IO){
+        return withContext(Dispatchers.IO) {
             csvReader
                 .readAll()
                 .drop(1)
@@ -21,7 +21,7 @@ class CompanyListingsParser @Inject constructor(): CSVParser<CompanyListings> {
                     val symbol = line.getOrNull(0)
                     val name = line.getOrNull(1)
                     val exchange = line.getOrNull(2)
-                    CompanyListings(
+                    CompanyListing(
                         name = name ?: return@mapNotNull null,
                         symbol = symbol ?: return@mapNotNull null,
                         exchange = exchange ?: return@mapNotNull null,

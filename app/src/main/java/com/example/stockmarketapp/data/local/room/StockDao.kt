@@ -1,6 +1,9 @@
 package com.example.stockmarketapp.data.local.room
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 
 @Dao
 interface StockDao {
@@ -8,7 +11,7 @@ interface StockDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCompanyListings(companyListingsEntities: List<CompanyListingsEntity>)
 
-    @Delete
+    @Query("DELETE FROM CompanyListingsEntity")
     suspend fun deleteCompanyListings()
 
     @Query("""
