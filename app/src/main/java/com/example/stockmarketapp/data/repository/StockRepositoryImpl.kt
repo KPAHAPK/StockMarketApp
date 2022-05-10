@@ -1,11 +1,12 @@
-package com.example.stockmarketapp.domain.repository
+package com.example.stockmarketapp.data.repository
 
 import com.example.stockmarketapp.data.csv.CSVParser
 import com.example.stockmarketapp.data.local.room.StockDatabase
-import com.example.stockmarketapp.data.local.room.toCompanyListings
-import com.example.stockmarketapp.data.local.room.toCompanyListingsEntity
+import com.example.stockmarketapp.data.mapper.toCompanyListing
+import com.example.stockmarketapp.data.mapper.toCompanyListingEntity
 import com.example.stockmarketapp.data.remote.StockApi
 import com.example.stockmarketapp.domain.model.CompanyListing
+import com.example.stockmarketapp.domain.repository.StockRepository
 import com.example.stockmarketapp.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -18,52 +19,50 @@ import javax.inject.Singleton
 class StockRepositoryImpl @Inject constructor(
     private val api: StockApi,
     private val db: StockDatabase,
-    private val companyListingParser: CSVParser<CompanyListing>,
-) : StockRepository {
+    private val companyListingsParser: CSVParser<CompanyListing>
+): StockRepository {
 
-    private val stockDao = db.stockDao
+    private val stockDao = db.dao
 
     override suspend fun getCompanyListings(
         fetchFromRemote: Boolean,
-        query: String,
+        query: String
     ): Flow<Resource<List<CompanyListing>>> {
         return flow {
             emit(Resource.Loading(true))
-            val localListings = stockDao.searchCompanyListings(query)
+            val localListings = stockDao.searchCompanyListing(query)
             emit(Resource.Success(
-                data = localListings.map { it.toCompanyListings() }
+                data = localListings.map { it.toCompanyListing() }
             ))
 
             val isDbEmpty = localListings.isEmpty() && query.isBlank()
             val shouldJustLoadFromCache = !isDbEmpty && !fetchFromRemote
-            if (shouldJustLoadFromCache) {
+            if(shouldJustLoadFromCache) {
                 emit(Resource.Loading(false))
                 return@flow
             }
             val remoteListings = try {
                 val response = api.getListings()
-                companyListingParser.parse(response.byteStream())
-            } catch (e: IOException) {
+                companyListingsParser.parse(response.byteStream())
+            } catch(e: IOException) {
                 e.printStackTrace()
-                emit(Resource.Error("Couldn't load data ${e.message}"))
+                emit(Resource.Error("Couldn't load data"))
                 null
             } catch (e: HttpException) {
                 e.printStackTrace()
-                emit(Resource.Error("Couldn't load data ${e.message}"))
+                emit(Resource.Error("Couldn't load data"))
                 null
             }
 
             remoteListings?.let { listings ->
                 stockDao.deleteCompanyListings()
                 stockDao.insertCompanyListings(
-                    listings.map { it.toCompanyListingsEntity() }
+                    listings.map { it.toCompanyListingEntity() }
                 )
                 emit(Resource.Success(
                     data = stockDao
-                        .searchCompanyListings("")
-                        .map {
-                            it.toCompanyListings()
-                        }
+                        .searchCompanyListing("")
+                        .map { it.toCompanyListing() }
                 ))
                 emit(Resource.Loading(false))
             }

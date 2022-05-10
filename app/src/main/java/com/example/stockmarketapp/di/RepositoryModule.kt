@@ -4,7 +4,7 @@ import com.example.stockmarketapp.data.csv.CSVParser
 import com.example.stockmarketapp.data.csv.CompanyListingsParser
 import com.example.stockmarketapp.domain.model.CompanyListing
 import com.example.stockmarketapp.domain.repository.StockRepository
-import com.example.stockmarketapp.domain.repository.StockRepositoryImpl
+import com.example.stockmarketapp.data.repository.StockRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -17,13 +17,13 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindsCompanyListingsParser(
-        companyListingsParser: CompanyListingsParser,
+    abstract fun bindCompanyListingsParser(
+        companyListingsParser: CompanyListingsParser
     ): CSVParser<CompanyListing>
 
     @Binds
     @Singleton
-    abstract fun bindsStockRepository(
-        stockRepositoryImpl: StockRepositoryImpl,
+    abstract fun bindStockRepository(
+        stockRepositoryImpl: StockRepositoryImpl
     ): StockRepository
 }
