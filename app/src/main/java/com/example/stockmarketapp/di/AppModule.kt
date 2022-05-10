@@ -19,19 +19,21 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideStockApi(): StockApi =
-        Retrofit.Builder()
+    fun provideStockApi(): StockApi {
+        return Retrofit.Builder()
             .baseUrl(StockApi.BASE_URL)
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
             .create()
+    }
 
     @Provides
     @Singleton
-    fun providesStockDatabase(app: Application): StockDatabase =
-        Room.databaseBuilder(
+    fun provideStockDatabase(app: Application): StockDatabase {
+        return Room.databaseBuilder(
             app,
             StockDatabase::class.java,
-            "stockdb.db")
-            .build()
+            "stockdb.db"
+        ).build()
+    }
 }

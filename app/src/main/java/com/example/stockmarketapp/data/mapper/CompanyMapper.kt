@@ -1,8 +1,9 @@
-package com.example.stockmarketapp.data.local.room
+package com.example.stockmarketapp.data.mapper
 
+import com.example.stockmarketapp.data.local.room.CompanyListingsEntity
 import com.example.stockmarketapp.domain.model.CompanyListing
 
-fun CompanyListingsEntity.toCompanyListings(): CompanyListing {
+fun CompanyListingsEntity.toCompanyListing(): CompanyListing {
     return CompanyListing(
         name = name,
         symbol = symbol,
@@ -10,7 +11,7 @@ fun CompanyListingsEntity.toCompanyListings(): CompanyListing {
     )
 }
 
-fun CompanyListing.toCompanyListingsEntity(): CompanyListingsEntity {
+fun CompanyListing.toCompanyListingEntity(): CompanyListingsEntity {
     return CompanyListingsEntity(
         name = name,
         symbol = symbol,

@@ -21,7 +21,7 @@ fun StockMarketAppTheme(
 ) {
     MaterialTheme(
         colors = DarkColorPalette,
-        typography = Typography(),
+        typography = Typography,
         shapes = Shapes,
         content = content
     )

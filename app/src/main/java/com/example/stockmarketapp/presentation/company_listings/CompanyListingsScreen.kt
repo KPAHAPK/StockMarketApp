@@ -22,9 +22,11 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @Destination(start = true)
 fun CompanyListingsScreen(
     navigator: DestinationsNavigator,
-    viewModel: CompanyListingsViewModel = hiltViewModel(),
+    viewModel: CompanyListingsViewModel = hiltViewModel()
 ) {
-    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = viewModel.state.isRefreshing)
+    val swipeRefreshState = rememberSwipeRefreshState(
+        isRefreshing = viewModel.state.isRefreshing
+    )
     val state = viewModel.state
     Column(
         modifier = Modifier.fillMaxSize()
@@ -45,9 +47,12 @@ fun CompanyListingsScreen(
             maxLines = 1,
             singleLine = true
         )
-        SwipeRefresh(state = swipeRefreshState, onRefresh = {
-            viewModel.onEvent(CompanyListingsEvent.Refresh)
-        }) {
+        SwipeRefresh(
+            state = swipeRefreshState,
+            onRefresh = {
+                viewModel.onEvent(CompanyListingsEvent.Refresh)
+            }
+        ) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
@@ -58,11 +63,11 @@ fun CompanyListingsScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                // TODO: To detailsScreen
+                                // TODO: Navigate to detail screen
                             }
-
+                            .padding(16.dp)
                     )
-                    if (i < state.companies.size) {
+                    if(i < state.companies.size) {
                         Divider(modifier = Modifier.padding(
                             horizontal = 16.dp
                         ))
@@ -70,6 +75,5 @@ fun CompanyListingsScreen(
                 }
             }
         }
-
     }
 }
