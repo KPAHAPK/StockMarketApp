@@ -1,19 +1,16 @@
 package com.example.stockmarketapp.domain.repository
 
 import com.example.stockmarketapp.data.csv.CSVParser
-import com.example.stockmarketapp.data.csv.CompanyListingsParser
 import com.example.stockmarketapp.data.local.room.StockDatabase
 import com.example.stockmarketapp.data.local.room.toCompanyListings
 import com.example.stockmarketapp.data.local.room.toCompanyListingsEntity
 import com.example.stockmarketapp.data.remote.StockApi
-import com.example.stockmarketapp.domain.model.CompanyListings
+import com.example.stockmarketapp.domain.model.CompanyListing
 import com.example.stockmarketapp.util.Resource
-import com.opencsv.CSVReader
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
 import java.io.IOException
-import java.io.InputStreamReader
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -21,7 +18,7 @@ import javax.inject.Singleton
 class StockRepositoryImpl @Inject constructor(
     val api: StockApi,
     val db: StockDatabase,
-    val companyListingsParser: CSVParser<CompanyListings>
+    val companyListingParser: CSVParser<CompanyListing>
 ): StockRepository {
 
     private val stockDao = db.stockDao
@@ -29,7 +26,7 @@ class StockRepositoryImpl @Inject constructor(
     override suspend fun getCompanyListings(
         fetchFromRemote: Boolean,
         query: String,
-    ): Flow<Resource<List<CompanyListings>>> {
+    ): Flow<Resource<List<CompanyListing>>> {
         return flow{
             emit(Resource.Loading(true))
             val localListings = stockDao.searchCompanyListings(query)
@@ -45,7 +42,7 @@ class StockRepositoryImpl @Inject constructor(
             }
             val remoteListings = try {
                 val response = api.getListings()
-                companyListingsParser.parse(response.byteStream())
+                companyListingParser.parse(response.byteStream())
             }catch (e: IOException){
                 e.printStackTrace()
                 emit(Resource.Error("Couldn't load data ${e.message}"))
