@@ -30,8 +30,8 @@ object AppModule {
     @Singleton
     fun providesStockDatabase(app: Application): StockDatabase =
         Room.databaseBuilder(
-                app,
-                StockDatabase::class.java,
-                 "stockdb.db")
+            app,
+            StockDatabase::class.java,
+            "stockdb.db")
             .build()
 }

@@ -18,8 +18,8 @@ import javax.inject.Singleton
 class StockRepositoryImpl @Inject constructor(
     private val api: StockApi,
     private val db: StockDatabase,
-    private val companyListingParser: CSVParser<CompanyListing>
-): StockRepository {
+    private val companyListingParser: CSVParser<CompanyListing>,
+) : StockRepository {
 
     private val stockDao = db.stockDao
 
@@ -27,7 +27,7 @@ class StockRepositoryImpl @Inject constructor(
         fetchFromRemote: Boolean,
         query: String,
     ): Flow<Resource<List<CompanyListing>>> {
-        return flow{
+        return flow {
             emit(Resource.Loading(true))
             val localListings = stockDao.searchCompanyListings(query)
             emit(Resource.Success(
@@ -36,18 +36,18 @@ class StockRepositoryImpl @Inject constructor(
 
             val isDbEmpty = localListings.isEmpty() && query.isBlank()
             val shouldJustLoadFromCache = !isDbEmpty && !fetchFromRemote
-            if (shouldJustLoadFromCache){
+            if (shouldJustLoadFromCache) {
                 emit(Resource.Loading(false))
                 return@flow
             }
             val remoteListings = try {
                 val response = api.getListings()
                 companyListingParser.parse(response.byteStream())
-            }catch (e: IOException){
+            } catch (e: IOException) {
                 e.printStackTrace()
                 emit(Resource.Error("Couldn't load data ${e.message}"))
                 null
-            }catch (e: HttpException){
+            } catch (e: HttpException) {
                 e.printStackTrace()
                 emit(Resource.Error("Couldn't load data ${e.message}"))
                 null

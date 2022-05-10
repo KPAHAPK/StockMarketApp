@@ -17,7 +17,7 @@ private val DarkColorPalette = darkColors(
 @Composable
 fun StockMarketAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     MaterialTheme(
         colors = DarkColorPalette,

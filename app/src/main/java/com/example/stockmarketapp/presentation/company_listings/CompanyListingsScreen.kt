@@ -19,7 +19,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Composable
-@Destination
+@Destination(start = true)
 fun CompanyListingsScreen(
     navigator: DestinationsNavigator,
     viewModel: CompanyListingsViewModel = hiltViewModel(),
@@ -62,7 +62,7 @@ fun CompanyListingsScreen(
                             }
 
                     )
-                    if (i < state.companies.size){
+                    if (i < state.companies.size) {
                         Divider(modifier = Modifier.padding(
                             horizontal = 16.dp
                         ))
