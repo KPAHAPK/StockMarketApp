@@ -2,10 +2,13 @@ package com.example.stockmarketapp.data.repository
 
 import com.example.stockmarketapp.data.csv.CSVParser
 import com.example.stockmarketapp.data.local.room.StockDatabase
+import com.example.stockmarketapp.data.mapper.toCompanyInfo
 import com.example.stockmarketapp.data.mapper.toCompanyListing
 import com.example.stockmarketapp.data.mapper.toCompanyListingEntity
 import com.example.stockmarketapp.data.remote.StockApi
+import com.example.stockmarketapp.domain.model.CompanyInfo
 import com.example.stockmarketapp.domain.model.CompanyListing
+import com.example.stockmarketapp.domain.model.IntradayInfo
 import com.example.stockmarketapp.domain.repository.StockRepository
 import com.example.stockmarketapp.util.Resource
 import kotlinx.coroutines.flow.Flow
@@ -19,14 +22,15 @@ import javax.inject.Singleton
 class StockRepositoryImpl @Inject constructor(
     private val api: StockApi,
     private val db: StockDatabase,
-    private val companyListingsParser: CSVParser<CompanyListing>
-): StockRepository {
+    private val companyListingsParser: CSVParser<CompanyListing>,
+    private val intradayParser: CSVParser<IntradayInfo>,
+) : StockRepository {
 
     private val stockDao = db.dao
 
     override suspend fun getCompanyListings(
         fetchFromRemote: Boolean,
-        query: String
+        query: String,
     ): Flow<Resource<List<CompanyListing>>> {
         return flow {
             emit(Resource.Loading(true))
@@ -37,14 +41,14 @@ class StockRepositoryImpl @Inject constructor(
 
             val isDbEmpty = localListings.isEmpty() && query.isBlank()
             val shouldJustLoadFromCache = !isDbEmpty && !fetchFromRemote
-            if(shouldJustLoadFromCache) {
+            if (shouldJustLoadFromCache) {
                 emit(Resource.Loading(false))
                 return@flow
             }
             val remoteListings = try {
                 val response = api.getListings()
                 companyListingsParser.parse(response.byteStream())
-            } catch(e: IOException) {
+            } catch (e: IOException) {
                 e.printStackTrace()
                 emit(Resource.Error("Couldn't load data"))
                 null
@@ -66,6 +70,37 @@ class StockRepositoryImpl @Inject constructor(
                 ))
                 emit(Resource.Loading(false))
             }
+        }
+    }
+
+    override suspend fun getIntradayInfo(symbol: String): Resource<List<IntradayInfo>> {
+        return try {
+            val response = api.getIntraday(symbol = symbol)
+            val result = intradayParser.parse(response.byteStream())
+            Resource.Success(result)
+        } catch (e: IOException) {
+            Resource.Error(
+                message = "Couldn't load intraday info ${e.message}"
+            )
+        } catch (e: HttpException) {
+            Resource.Error(
+                message = "Couldn't load intraday info ${e.message}"
+            )
+        }
+    }
+
+    override suspend fun getCompanyInfo(symbol: String): Resource<CompanyInfo> {
+        return try {
+            val result = api.getInfo(symbol = symbol)
+            Resource.Success(result.toCompanyInfo())
+        } catch (e: IOException) {
+            Resource.Error(
+                message = "Couldn't load company info ${e.message}"
+            )
+        } catch (e: HttpException) {
+            Resource.Error(
+                message = "Couldn't load company info ${e.message}"
+            )
         }
     }
 }
