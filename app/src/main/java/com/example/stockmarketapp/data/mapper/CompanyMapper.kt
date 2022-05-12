@@ -23,10 +23,10 @@ fun CompanyListing.toCompanyListingEntity(): CompanyListingsEntity {
 
 fun CompanyInfoDto.toCompanyInfo(): CompanyInfo {
     return CompanyInfo(
-        symbol = symbol ?: "",
-        description = description ?: "",
-        name = name ?: "",
-        country = country ?: "",
-        industry = industry ?: "",
+        symbol = symbol,
+        description = description,
+        name = name,
+        country = country,
+        industry = industry,
     )
 }

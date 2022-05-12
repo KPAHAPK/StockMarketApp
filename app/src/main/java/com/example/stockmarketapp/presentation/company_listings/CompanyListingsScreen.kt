@@ -23,7 +23,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @Destination(start = true)
 fun CompanyListingsScreen(
     navigator: DestinationsNavigator,
-    viewModel: CompanyListingsViewModel = hiltViewModel()
+    viewModel: CompanyListingsViewModel = hiltViewModel(),
 ) {
     val swipeRefreshState = rememberSwipeRefreshState(
         isRefreshing = viewModel.state.isRefreshing
@@ -70,7 +70,7 @@ fun CompanyListingsScreen(
                             }
                             .padding(16.dp)
                     )
-                    if(i < state.companies.size) {
+                    if (i < state.companies.size) {
                         Divider(modifier = Modifier.padding(
                             horizontal = 16.dp
                         ))

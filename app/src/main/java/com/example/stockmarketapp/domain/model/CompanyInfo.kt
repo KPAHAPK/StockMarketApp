@@ -6,5 +6,4 @@ data class CompanyInfo(
     val name: String,
     val country: String,
     val industry: String,
-) {
-}
+)

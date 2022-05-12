@@ -16,7 +16,7 @@ import com.example.stockmarketapp.domain.model.CompanyListing
 @Composable
 fun CompanyItem(
     company: CompanyListing,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier,
